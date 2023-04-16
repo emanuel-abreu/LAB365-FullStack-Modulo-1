@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Operações na Conta</title>
+  </head>
+  <body>
+    <h1>Escolha qual alteração na conta deseja fazer:</h1>
+
+    <label id="selecao">Selecione:</label>
+    <select name="operacao" id="operacao">
+      <option value="foto" id="foto">Foto</option>
+      <option value="usuarioCadastrado" id="email">Email</option>
+      <option value="nome" id="nome">Nome</option>
+      <option value="senhaCadastrada" id="senha">Senha</option>
+    </select>
+
+    <script>
+      const select = document.getElementById("operacao");
+
+      select.addEventListener("click", function criaElementosHTML() {
+        const corpo = document.body;
+
+        // CIRANDO O BOTÃO
+        const botao = document.createElement("button");
+        const textoBotao = document.createTextNode("Clique para alterar");
+        botao.appendChild(textoBotao);
+        botao.setAttribute("id", "botao");
+
+        // CRIANDO O INPUT PARA ALTERAR
+        const input = document.createElement("input");
+        input.setAttribute("id", "novoDado");
+        input.setAttribute(
+          "placeholder",
+          `Novo(a) ${select.options[select.selectedIndex].text}`
+        );
+
+        // ADICIONANDO ESSES ELEMENTOS CRIADOS EM UMA DIV
+        const div = document.createElement("div");
+        div.appendChild(input);
+        div.appendChild(botao);
+        corpo.appendChild(div);
+
+        // OPERACÕES
+        botao.addEventListener("click", () => {
+          function operacao() {
+            // ALTERANDO EM LOCALSTORAGE
+            const adicionarNovoValor = localStorage.setItem(
+              `${select.options[select.selectedIndex].value}`,
+              `${document.getElementById("novoDado").value}`
+            );
+          }
+          operacao();
+        });
+        select.removeEventListener("click", criaElementosHTML);
+      });
+    </script>
+  </body>
+</html>

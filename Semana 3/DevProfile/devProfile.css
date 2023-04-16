@@ -1,0 +1,23 @@
+#corpo {
+  background-color: #d2eff5;
+  font-family: Arial;
+  font-size: 18px;
+  padding: 50px;
+  margin: 10px auto;
+  border-color: #ece7dd;
+  border-style: solid;
+  border-width: 5px;
+  border-radius: 30px;
+  width: 500px;
+  height: 600px;
+}
+#imagem {
+  width: 300px;
+  border-radius: 200px;
+  border-style: solid;
+  border-color: rgb(19, 41, 165);
+  border-width: 3px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
