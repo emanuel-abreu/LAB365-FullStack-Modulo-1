@@ -1,4 +1,13 @@
 const express = require("express");
+
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+const createTask = require("./src/controllers/tasks/createTask");
+const deletarTarefa = require("./src/controllers/tasks/deleteTask");
+const listarTarefas = require("./src/controllers/tasks/listTask");
+const atualizarTarefa = require("./src/controllers/tasks/updateTask");
+
 const connection = require("./src/database");
 
 const Task = require("./src/modules/task");
@@ -13,93 +22,44 @@ connection.sync({ alter: true });
 
 // Tarefas
 
-app.post("/tarefas", async (request, response) => {
-  try {
-    const tarefa = {
-      name: request.body.name,
-      description: request.body.description,
-    };
+app.post("/tarefas", createTask);
 
-    if (!tarefa.name || !tarefa.description) {
-      return response
-        .status(400)
-        .json({ message: "Nome/Descrição é obrigatório" });
-    }
+app.get("/tarefas", listarTarefas);
 
-    const taskInDatabase = await Task.findOne({ where: { name: tarefa.name } });
+app.put("/tarefas/:id", atualizarTarefa);
 
-    if (taskInDatabase) {
-      return response
-        .status(400)
-        .json({ message: "Já existe uma tarefa com esse nome" });
-    }
-
-    const newTask = await Task.create(tarefa);
-
-    response.status(201).json(newTask);
-  } catch (error) {
-    response
-      .status(500)
-      .json({ message: "Não conseguimos processar sua solicitação " });
-  }
-});
-
-app.get("/tarefas", async (request, response) => {
-  try {
-    const tasks = await Task.findAll();
-    return response.status(200).json(tasks);
-  } catch (error) {
-    response
-      .status(500)
-      .json({ message: "Não conseguimos processar sua solicitação " });
-  }
-});
-
-app.put("/tarefas/:id", async (request, response) => {
-  try {
-    const taskInDatabase = await Task.findByPk(request.params.id);
-    if (!taskInDatabase) {
-      return response.status(404).json({ message: "Tarefa não encontrada" });
-    }
-
-    taskInDatabase.name = request.body.name || taskInDatabase.name;
-    taskInDatabase.description =
-      request.body.description || taskInDatabase.description;
-
-    await taskInDatabase.save();
-
-    response.json(taskInDatabase);
-  } catch (error) {
-    response
-      .status(500)
-      .json({ message: "Não conseguimos processar sua solicitação" });
-  }
-});
-
-app.delete("/tarefas/:id", async (request, response) => {
-  try {
-    await Task.destroy({
-      where: {
-        id: request.params.id,
-      },
-    });
-    response.status(204);
-  } catch (error) {
-    response
-      .status(500)
-      .json({ message: "Não conseguimos processar sua solicitação " });
-  }
-});
+app.delete("/tarefas/:id", deletarTarefa);
 
 // Usuários
 
 app.post("/users", async (request, response) => {
   try {
+    // criptografar senha
+
+    const hash = await bcrypt.hash(request.body.password, 10);
+
+    const userDatabase = await User.findOne({
+      where: {
+        email: request.body.email,
+      },
+    });
+    if (userDatabase) {
+      return response
+        .status(403)
+        .json({ message: " Já existe um usuário com esse email" });
+    }
+
+    if (userDatabase.username) {
+      return response
+        .status(403)
+        .json({ message: "Nome de usuário já existente" });
+    }
+
     const newUser = {
       name: request.body.name,
       email: request.body.email,
       username: request.body.username,
-      password: request.body.password,
+      password: hash,
     };
 
     const user = await User.create(newUser);
@@ -112,4 +72,44 @@ app.post("/users", async (request, response) => {
   }
 });
 
-app.listen(3333, () => console.log("Aplicação online"));
+app.post("/sessions", async (request, response) => {
+  try {
+    const userDatabase = await User.findOne({
+      where: {
+        username: request.body.username,
+      },
+    });
+    if (!userDatabase) {
+      return response.status(403).json({ message: "Credenciais incorretas" });
+    }
+    // retorna true se bater a senha passada no body
+    const passwordIsValid = await bcrypt.compare(
+      request.body.password,
+      userDatabase.password
+    );
+
+    if (!passwordIsValid) {
+      return response.status(404).json({ message: "Credenciais incorretas" });
+    }
+
+    // gerou o token injetando o id do usuario
+    // chave secreta e o tempo que o token vai ficar válido
+    const token = jwt.sign(
+      {
+        id: userDatabase.id,
+      },
+      "@4PI_US3R",
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    response.status(201).json({ name: request.body.name, token });
+  } catch (error) {
+    response
+      .status(500)
+      .json({ message: "Não conseguimos processar a sua solicitação" });
+  }
+});
+
+app.listen(9999, () => console.log("Aplicação online"));
