@@ -3,6 +3,8 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 
+const workLevel = require("./middlewares/workLevel");
+
 app.post("/body/:nome", (request, response) => {
   response
     .status(201)
@@ -21,7 +23,7 @@ app.post("/body", (request, response) => {
   response.status(200).json(data);
 });
 
-app.post("/cadastro", (request, response) => {
+app.post("/cadastro", workLevel, (request, response) => {
   const data = {
     name: request.body.name,
     age: request.body.age,
