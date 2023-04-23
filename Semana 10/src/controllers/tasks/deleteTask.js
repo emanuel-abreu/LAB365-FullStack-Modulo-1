@@ -1,4 +1,4 @@
-const Task = require("../../modules/task");
+const Task = require("../../models/task");
 
 async function deletarTarefa(request, response) {
   try {

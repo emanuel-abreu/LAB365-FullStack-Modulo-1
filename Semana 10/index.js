@@ -11,8 +11,8 @@ const atualizarTarefa = require("./src/controllers/tasks/updateTask");
 
 const connection = require("./src/database");
 
-const Task = require("./src/modules/task");
-const User = require("./src/modules/user");
+const Task = require("./src/models/task");
+const User = require("./src/models/user");
 
 // middleware global, sempre vai ser executado
 const log = require("./src/middlewares/log");

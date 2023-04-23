@@ -1,6 +1,6 @@
 const express = require("express");
 const connection = require("./src/database");
-const User = require("../Semana 8/src/modules/user");
+const User = require("../Semana 8/src/models/user");
 
 const app = express();
 
