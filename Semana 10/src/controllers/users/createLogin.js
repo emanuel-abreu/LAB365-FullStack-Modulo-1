@@ -30,7 +30,7 @@ async function createLogin(request, response) {
       {
         id: userDatabase.id,
       },
-      "@4PI_US3R",
+      process.env.CHAVE_DO_TOKEN,
       {
         expiresIn: "1h",
       }
