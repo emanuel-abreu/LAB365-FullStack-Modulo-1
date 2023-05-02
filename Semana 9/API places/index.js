@@ -74,9 +74,13 @@ app.put("/places/:id", async (request, response) => {
     placeInDatabase.opening_hours =
       request.body.opening_hours || placeInDatabase.opening_hours;
     placeInDatabase.contact = request.body.contact || placeInDatabase.contact;
+    placeInDatabase.latitudes =
+      request.body.latitudes || placeInDatabase.latitudes;
+    placeInDatabase.longitude =
+      request.body.longitude || placeInDatabase.longitude;
 
     await placeInDatabase.save(); // UPDATE
-    response.json(placeInDatabase);
+    response.status(200).json(placeInDatabase);
   } catch (error) {
     response
       .status(500)
