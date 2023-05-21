@@ -1,14 +1,13 @@
 const Sequelize = require("sequelize");
 
 const connection = new Sequelize({
-  dialect: "postgres", // qual banco vai se conectar
-  host: "localhost", // onde o banco está
-  username: "emanuel", // qual usuario
-  password: "emanuel", // qual senha
-  port: "5432", // porta
-  database: "places_database", // nome do banco de dados
+  dialect: process.env.DIALECT_DATABASE, // qual banco vai se conecta
+  host: process.env.HOST_DATABASE, //onde o banco está ?
+  username: process.env.USER_DATABASE, //qual usuario
+  password: process.env.PASSWORD_DATABASE, // qual senha
+  port: process.env.PORT_DATABASE, // qual a porta
+  database: process.env.NAME_DATABASE, //qual  nome do banco de dados
   define: {
-    timestamps: true,
     underscored: true,
     underscoredAll: true,
   },
